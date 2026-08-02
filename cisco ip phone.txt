@@ -1,0 +1,96 @@
+ROUTER :
+
+Router > en
+Router #conf t
+Router(config)#ip dhcp pool VOICE
+               network 192.168.10.0 255.255.255.0
+               default-router 192.168.10.1
+               option 150 ip 192.168.10.1
+               ip dhcp excluded-address 192.168.10.1
+            
+Router(config)#ip dhcp pool DATA
+               network 10.0.0.0 255.0.0.0
+               default-router 10.0.0.1
+               ip dhcp excluded-address 10.0.0.1
+               do wr
+Router(config)#int fa 0/0
+               no shut
+               exit
+               int fa 0/0.10
+               encapsulation dot1q 10
+               ip add 192.168.10.1 255.255.255.0
+               no shut
+               exit
+               int fa 0/0.20
+               encapsulation dot1q 20
+               ip add 10.0.0.1 255.0.0.0
+               exit
+               do wr
+
+
+
+Router(config)#telephony-service
+               max-ephone 2
+               max-dn 2
+               ip source 192.168.10.1 port 2000
+               auto assign 1 to 2
+               create cnf-files
+               exit
+Router(config)#ephone-dn 1
+               number 100
+               exit
+Router(config)#ephone-dn 2
+               number 200
+               exit
+               do wr
+               
+               
+               
+
+
+SWITCH:
+ 
+Switch> en
+Switch #conf t
+Switch(config)#vlan 10
+               Name VOICE
+               exit
+Switch(config)#vlan 20
+               Name DATA
+               exit
+Switch(config)#int fa 0/1
+               switchport mode access
+               switchport access vlan 20
+               switchport voice vlan 10
+               exit
+Switch(config)#int fa 0/2
+               switchport mode access
+               switchport access vlan 20
+               switchport voice vlan 10
+               exit
+Switch(config)#int gig 0/1
+               switchport trunk allowed vlan 1,10,20
+               switchport mode trunk
+               no shut               
+               exit
+               do wr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+               
+  
+
+
+ 
